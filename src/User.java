@@ -1,7 +1,7 @@
 import java.sql.*;
 
 public class User {
-	private static String databaseURL = "jdbc:postgresql://localhost:5432/postgres?user=postgres&password=admin";
+	private static String databaseURL = "jdbc:postgresql://localhost:5432/parking?user=parking_admin&password=admin";
 	private static Connection connection;
 	
 	private static PreparedStatement loginStatement;

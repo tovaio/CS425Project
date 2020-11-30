@@ -1,6 +1,5 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.*;
 import javax.swing.*;
 
 public class LoginPrompt extends JDialog {
