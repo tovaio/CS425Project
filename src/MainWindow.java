@@ -3,13 +3,14 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class MainWindow extends JFrame {
-	private JLabel loginStatus;
 	private User user;
 	
 	public MainWindow() {
 		super("Parking Database Application");
-		setupUI();
-		
+		promptLogin();
+	}
+	
+	private void promptLogin() {
 		// Prompt user for login
 		LoginPrompt prompt = new LoginPrompt(this);
 		prompt.setVisible(true);
@@ -21,15 +22,62 @@ public class MainWindow extends JFrame {
 			return;
 		}
 		
-		loginStatus.setText("Logged in as user \"" + user.getUsername() + "\" with user ID " + user.getUserID());
+		setupUI();
 	}
 	
 	private void setupUI() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(800, 600);
-		setLayout(new FlowLayout());
+		getContentPane().removeAll();
 		
-		loginStatus = new JLabel("Not logged in");
-		getContentPane().add(loginStatus);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		JPanel panel = new JPanel(new GridBagLayout());
+		GridBagConstraints constraints = new GridBagConstraints();
+		
+		MainWindow _this = this;
+		
+		JMenuBar menuBar = new JMenuBar();
+		
+		JMenu fileMenu = new JMenu("File");
+		menuBar.add(fileMenu);
+		
+		JMenuItem logOutItem = new JMenuItem("Log Out");
+		logOutItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				promptLogin();
+			}
+		});
+		JMenuItem exitItem = new JMenuItem("Exit");
+		exitItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				dispatchEvent(new WindowEvent(_this, WindowEvent.WINDOW_CLOSING));
+			}
+		});
+		fileMenu.add(logOutItem);
+		fileMenu.add(exitItem);
+		getContentPane().add(menuBar, BorderLayout.NORTH);
+		
+		JLabel welcomeLabel = new JLabel("Welcome, " + user.getUsername() + "!");
+		constraints.gridx = 0;
+		constraints.gridy = 0;
+		constraints.gridwidth = 1;
+		panel.add(welcomeLabel, constraints);
+		
+		JButton reserveButton = new JButton("Reserve a parking spot");
+		constraints.gridx = 0;
+		constraints.gridy = 1;
+		constraints.gridwidth = 1;
+		panel.add(reserveButton, constraints);
+		
+		JButton membershipButton = new JButton("Buy a membership");
+		constraints.gridx = 0;
+		constraints.gridy = 2;
+		constraints.gridwidth = 1;
+		panel.add(membershipButton, constraints);
+		
+		getContentPane().add(panel, BorderLayout.CENTER);
+		pack();
+		setResizable(false);
+		
+		getContentPane().repaint();
 	}
 }

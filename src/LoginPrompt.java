@@ -59,7 +59,7 @@ public class LoginPrompt extends JDialog {
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				try {
-					user = new User(getUsername(), getPassword());
+					user = new User(getUsername(), getPassword(), false);
 					dispose();
 				} catch (LoginException exception) {
 					errorLabel.setText(exception.getMessage());
@@ -78,7 +78,7 @@ public class LoginPrompt extends JDialog {
 		registerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				try {
-					user = User.registerUser(getUsername(), getPassword());
+					user = new User(getUsername(), getPassword(), true);
 					dispose();
 				} catch (LoginException exception) {
 					errorLabel.setText(exception.getMessage());
