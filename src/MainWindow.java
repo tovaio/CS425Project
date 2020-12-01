@@ -7,6 +7,8 @@ public class MainWindow extends JFrame {
 	
 	public MainWindow() {
 		super("Parking Database Application");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
 		promptLogin();
 	}
 	
@@ -27,8 +29,6 @@ public class MainWindow extends JFrame {
 	
 	private void setupUI() {
 		getContentPane().removeAll();
-		
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
