@@ -3,14 +3,8 @@ import java.awt.event.*;
 import javax.swing.*;
 
 public class LoginPrompt extends JDialog {
-	private JLabel usernameLabel;
 	private JTextField usernameField;
-	private JLabel passwordLabel;
 	private JPasswordField passwordField;
-	private JLabel errorLabel;
-	private JButton loginButton;
-	private JButton registerButton;
-	private JButton cancelButton;
 	
 	private User user;
 	
@@ -24,7 +18,7 @@ public class LoginPrompt extends JDialog {
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		
-		usernameLabel = new JLabel("Username:");
+		JLabel usernameLabel = new JLabel("Username:");
 		constraints.gridx = 0;
 		constraints.gridy = 0;
 		constraints.gridwidth = 1;
@@ -36,7 +30,7 @@ public class LoginPrompt extends JDialog {
 		constraints.gridwidth = 2;
 		panel.add(usernameField, constraints);
 		
-		passwordLabel = new JLabel("Password:");
+		JLabel passwordLabel = new JLabel("Password:");
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 		constraints.gridwidth = 1;
@@ -48,20 +42,20 @@ public class LoginPrompt extends JDialog {
 		constraints.gridwidth = 2;
 		panel.add(passwordField, constraints);
 		
-		errorLabel = new JLabel(" ");
+		JLabel errorLabel = new JLabel(" ");
 		errorLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		constraints.gridx = 0;
 		constraints.gridy = 2;
 		constraints.gridwidth = 3;
 		panel.add(errorLabel, constraints);
 		
-		loginButton = new JButton("Login");
+		JButton loginButton = new JButton("Login");
 		loginButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				try {
 					user = new User(getUsername(), getPassword(), false);
 					dispose();
-				} catch (LoginException exception) {
+				} catch (ParkingException exception) {
 					errorLabel.setText(exception.getMessage());
 				} catch (Exception exception) {
 					errorLabel.setText("Unexpected error; check System.err");
@@ -74,13 +68,13 @@ public class LoginPrompt extends JDialog {
 		constraints.gridwidth = 1;
 		panel.add(loginButton, constraints);
 		
-		registerButton = new JButton("Register");
+		JButton registerButton = new JButton("Register");
 		registerButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				try {
 					user = new User(getUsername(), getPassword(), true);
 					dispose();
-				} catch (LoginException exception) {
+				} catch (ParkingException exception) {
 					errorLabel.setText(exception.getMessage());
 				} catch (Exception exception) {
 					errorLabel.setText("Unexpected error; check System.err");
@@ -93,7 +87,7 @@ public class LoginPrompt extends JDialog {
 		constraints.gridwidth = 1;
 		panel.add(registerButton, constraints);
 		
-		cancelButton = new JButton("Cancel");
+		JButton cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				dispose();

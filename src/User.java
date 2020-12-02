@@ -6,6 +6,11 @@ public class User {
 	
 	private static PreparedStatement searchStatement;
 	private static PreparedStatement registerStatement;
+	private static PreparedStatement userListStatement;
+	private static PreparedStatement getUserStatement;
+	private static PreparedStatement setUserStatement;
+	private static PreparedStatement adminSetUserStatement;
+	private static PreparedStatement getLotStatement;
 
 	private int userID;
 	private String username;
@@ -13,42 +18,39 @@ public class User {
 	private boolean isLotStaff;
 	private int staffedLotID;
 	
-	public User(String _username, String _password, boolean registerNewUser) throws LoginException, SQLException {
+	public User(String _username, String _password, boolean registerNewUser) throws ParkingException, SQLException {
 		User.validateUsernameAndPassword(_username, _password);
 		User.connect();
 		
-		searchStatement.setString(1, _username);
-		ResultSet searchResult = searchStatement.executeQuery();
+		ResultSet searchResult = User.searchUser(_username);
 		
 		if (registerNewUser) {
 			if (!searchResult.next()) {
-				registerStatement.setString(1, _username);
-				registerStatement.setString(2, _password);
-				ResultSet registerResult = registerStatement.executeQuery();
+				ResultSet registerResult = User.registerUser(_username, _password);
 				
 				if (registerResult.next()) {
 					setCredentials(registerResult);
 				} else {
-					throw new LoginException("Unable to register user \"" + _username + "\".");
+					throw new ParkingException("Unable to register user \"" + _username + "\".");
 				}
 			} else {
-				throw new LoginException("User \"" + _username + "\" already exists.");
+				throw new ParkingException("User \"" + _username + "\" already exists.");
 			}
 		} else {
 			if (searchResult.next() && searchResult.getString("password").equals(_password)) {
 				setCredentials(searchResult);
 			} else {
-				throw new LoginException("Incorrect login for user \"" + _username + "\".");
+				throw new ParkingException("Incorrect login for user \"" + _username + "\".");
 			}
 		}
 	}
 	
-	private static void validateUsernameAndPassword(String _username, String _password) throws LoginException {
+	private static void validateUsernameAndPassword(String _username, String _password) throws ParkingException {
 		if (_username.length() == 0) {
-			throw new LoginException("Username field must not be empty.");
+			throw new ParkingException("Username field must not be empty.");
 		}
 		if (_password.length() == 0) {
-			throw new LoginException("Password field must not be empty.");
+			throw new ParkingException("Password field must not be empty.");
 		}
 	}
 	
@@ -60,7 +62,77 @@ public class User {
 			// Prepare SQL statements
 			searchStatement = connection.prepareStatement("select * from \"user\" where upper(\"name\") = upper(?);");
 			registerStatement = connection.prepareStatement("insert into \"user\" values (default, ?, ?, false, null) returning *;");
+			userListStatement = connection.prepareStatement("select user_id, name from \"user\" order by user_id;");
+			getUserStatement = connection.prepareStatement("select * from \"user\" where user_id = ?;");
+			setUserStatement = connection.prepareStatement("update \"user\" set \"name\" = ?, \"password\" = ? where user_id = ?;");
+			adminSetUserStatement = connection.prepareStatement("update \"user\" set \"name\" = ?, \"password\" = ?, is_admin = ?, lot_id = ? where user_id = ?;");
+			getLotStatement = connection.prepareStatement("select * from parking_lot where lot_id = ?;");
 		}
+	}
+	
+	public static ResultSet searchUser(String username) throws SQLException {
+		searchStatement.setString(1, username);
+		return searchStatement.executeQuery();
+	}
+	
+	public static ResultSet registerUser(String username, String password) throws SQLException {
+		registerStatement.setString(1, username);
+		registerStatement.setString(2, password);
+		return registerStatement.executeQuery();
+	}
+	
+	public static ResultSet getUserList() throws SQLException {
+		return userListStatement.executeQuery();
+	}
+	
+	public static ResultSet getUser(int userID) throws SQLException {
+		getUserStatement.setInt(1, userID);
+		return getUserStatement.executeQuery();
+	}
+	
+	public static void setUser(int userID, String username, String password) throws ParkingException, SQLException {
+		ResultSet searchResult = User.searchUser(username);
+		
+		if (searchResult.next() && searchResult.getInt("user_id") != userID) {
+			throw new ParkingException("Username \"" + username + "\" is already taken.");
+		}
+		
+		setUserStatement.setString(1, username);
+		setUserStatement.setString(2, password);
+		setUserStatement.setInt(3, userID);
+		setUserStatement.executeUpdate();
+	}
+	
+	public static void adminSetUser(int userID, String username, String password, boolean isAdmin, int lotID) throws ParkingException, SQLException {
+		ResultSet searchResult = User.searchUser(username);
+		
+		if (searchResult.next() && searchResult.getInt("user_id") != userID) {
+			throw new ParkingException("Username \"" + username + "\" is already taken.");
+		}
+		
+		if (lotID > 0) {
+			ResultSet lotResult = User.getLot(lotID);
+			
+			if (!lotResult.next()) {
+				throw new ParkingException("Lot with ID " + lotID + " does not exist.");
+			}
+		}
+		
+		adminSetUserStatement.setString(1, username);
+		adminSetUserStatement.setString(2, password);
+		adminSetUserStatement.setBoolean(3, isAdmin);
+		if (lotID > 0) {
+			adminSetUserStatement.setInt(4, lotID);
+		} else {
+			adminSetUserStatement.setNull(4, java.sql.Types.INTEGER);
+		}
+		adminSetUserStatement.setInt(5, userID);
+		adminSetUserStatement.executeUpdate();
+	}
+	
+	public static ResultSet getLot(int lotID) throws SQLException {
+		getLotStatement.setInt(1, lotID);
+		return getLotStatement.executeQuery();
 	}
 	
 	private void setCredentials(ResultSet userRow) throws SQLException {

@@ -16,12 +16,12 @@ public class MainWindow extends JFrame {
 	}
 	
 	private void promptLogin() {
+		clearSubMenus();
+		clearUI();
+		
 		// Prompt user for login
 		LoginPrompt prompt = new LoginPrompt(this);
 		prompt.setVisible(true);
-
-		clearSubMenus();
-		clearUI();
 		
 		// Exit early if the user is nonexistent
 		user = prompt.getUser();
@@ -48,6 +48,7 @@ public class MainWindow extends JFrame {
 	private void setupUI() {
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
+		constraints.fill = GridBagConstraints.HORIZONTAL;
 		
 		MainWindow _this = this;
 		
