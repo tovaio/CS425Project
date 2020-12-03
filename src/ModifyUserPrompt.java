@@ -68,6 +68,7 @@ public class ModifyUserPrompt extends JDialog {
 			panel.add(lotIDLabel, constraints);
 			
 			NumberFormat format = NumberFormat.getInstance();
+			format.setGroupingUsed(false);
 			NumberFormatter formatter = new NumberFormatter(format);
 			formatter.setValueClass(Integer.class);
 			formatter.setMinimum(0);

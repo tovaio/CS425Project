@@ -5,6 +5,7 @@ import javax.swing.*;
 
 public class SelectUserPrompt extends JDialog {
 	private int userID = 0;
+	private String username;
 	
 	public SelectUserPrompt(Frame parent) {
 		super(parent, "Browse Users", true);
@@ -23,10 +24,12 @@ public class SelectUserPrompt extends JDialog {
 			
 			while (userList.next()) {
 				int _userID = userList.getInt("user_id");
+				String _username = userList.getString("name");
 				JButton userButton = new JButton(userList.getString("name"));
 				userButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent event) {
 						setUserID(_userID);
+						username = _username;
 						dispose();
 					}
 				});
@@ -52,5 +55,9 @@ public class SelectUserPrompt extends JDialog {
 	
 	public int getUserID() {
 		return userID;
+	}
+	
+	public String getUsername() {
+		return username;
 	}
 }
